@@ -1,12 +1,12 @@
 "use strict";
 
-const CACHE_NAME = "bit-gpa-mate-v5-premium-ui";
+const CACHE_NAME = "bit-gpa-mate-v5.2-diploma-eligible";
 const BASE_URL = new URL("./", self.location.href);
 const APP_FILES = [
   "",
   "index.html",
-  "styles.css?v=5.0.0",
-  "app.js?v=5.0.0",
+  "styles.css?v=5.2.0",
+  "app.js?v=5.2.0",
   "manifest.json",
   "assets/uom-crest.png",
   "assets/bit-uom-logo.png",

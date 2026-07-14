@@ -1,5 +1,17 @@
 # Changelog
 
+## v5.2 — Diploma Eligibility Celebration
+
+- Shows an animated **“Diploma Eligible!”** celebration when the entered Level 1 results satisfy:
+  - 30 earned Level 1 GPA credits
+  - Minimum Level 1 LGPA of 2.00
+- Adds animated gold eligibility badge to the Level 1 qualification card.
+- Celebration is shown once while eligible, and becomes available again after eligibility is lost/reset and later regained.
+- Keeps the official verification disclaimer because final award eligibility depends on all Faculty and University requirements.
+- Updated PWA cache version so GitHub Pages/mobile installations receive the new UI.
+
+# Changelog
+
 ## Premium UI v5 — 2026-07-14
 
 - Completely redesigned the dashboard hero and academic journey presentation

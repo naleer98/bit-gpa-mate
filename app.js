@@ -2,6 +2,7 @@
 
 const STORAGE_KEY = "bit-gpa-mate-state-v2";
 const LEGACY_STORAGE_KEY = "bit-gpa-mate-state-v1";
+const DIPLOMA_CELEBRATION_KEY = "bit-gpa-mate-diploma-celebrated-v1";
 
 const GRADE_SCALE = [
   { marks: "85 and above", grade: "A+", gp: 4.0, meaning: "Excellent", earnsCredit: true, countsInGpa: true },
@@ -193,7 +194,13 @@ const elements = {
   installHelpDialog: document.getElementById("installHelpDialog"),
   installHelpText: document.getElementById("installHelpText"),
   closeInstallHelp: document.getElementById("closeInstallHelp"),
-  installHelpDone: document.getElementById("installHelpDone")
+  installHelpDone: document.getElementById("installHelpDone"),
+  appSplash: document.getElementById("appSplash"),
+  diplomaEligibleModal: document.getElementById("diplomaEligibleModal"),
+  diplomaEligibleCredits: document.getElementById("diplomaEligibleCredits"),
+  diplomaEligibleLgpa: document.getElementById("diplomaEligibleLgpa"),
+  eligibilityConfetti: document.getElementById("eligibilityConfetti"),
+  eligibilityDoneBtn: document.getElementById("eligibilityDoneBtn")
 };
 
 function clone(value) {
@@ -555,10 +562,10 @@ function renderQualificationJourney(calculations) {
     if (level === 3) requirements.push({ ok: status.electivesReady, text: `Four electives selected (${state.selectedElectives.length}/4)` });
 
     return `
-      <article class="qualification-card ${status.complete ? "complete" : status.started ? "warning" : ""}">
+      <article class="qualification-card ${status.complete ? "complete" : status.started ? "warning" : ""} ${level === 1 && status.complete ? "diploma-eligible" : ""}">
         <div class="qualification-card-head">
           <span class="level-badge">L${level}</span>
-          <span class="status-chip ${status.className}">${status.label}</span>
+          <span class="status-chip ${status.className} ${level === 1 && status.complete ? "diploma-ready" : ""}">${level === 1 && status.complete ? "Diploma eligible ✨" : status.label}</span>
         </div>
         <h3>${info.award}</h3>
         <p class="award-subtitle">${info.officialAward} · ${info.creditText}</p>
@@ -730,6 +737,55 @@ function renderGradeGuide() {
   `).join("");
 }
 
+function createEligibilityConfetti() {
+  if (!elements.eligibilityConfetti) return;
+  const colors = ["#7f1731", "#c7951d", "#f1d889", "#ad2c4c", "#fff5d4"];
+  elements.eligibilityConfetti.innerHTML = "";
+
+  for (let index = 0; index < 46; index += 1) {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    piece.style.left = `${Math.random() * 100}%`;
+    piece.style.background = colors[index % colors.length];
+    piece.style.setProperty("--fall-delay", `${Math.random() * 0.7}s`);
+    piece.style.setProperty("--fall-duration", `${2 + Math.random() * 1.5}s`);
+    piece.style.setProperty("--drift", `${-70 + Math.random() * 140}px`);
+    piece.style.setProperty("--spin", `${360 + Math.random() * 720}deg`);
+    elements.eligibilityConfetti.appendChild(piece);
+  }
+}
+
+function closeDiplomaEligibilityModal() {
+  if (!elements.diplomaEligibleModal || elements.diplomaEligibleModal.hidden) return;
+  elements.diplomaEligibleModal.hidden = true;
+  document.body.classList.remove("eligibility-active");
+}
+
+function showDiplomaEligibilityModal(level1Result) {
+  if (!elements.diplomaEligibleModal) return;
+  elements.diplomaEligibleCredits.textContent = `${level1Result.earnedCredits} / 30`;
+  elements.diplomaEligibleLgpa.textContent = formatGpa(level1Result.gpa);
+  createEligibilityConfetti();
+  elements.diplomaEligibleModal.hidden = false;
+  document.body.classList.add("eligibility-active");
+  localStorage.setItem(DIPLOMA_CELEBRATION_KEY, "shown");
+}
+
+function checkDiplomaEligibilityCelebration(calculations) {
+  const diplomaStatus = getQualificationStatus(1, calculations);
+  const alreadyShown = localStorage.getItem(DIPLOMA_CELEBRATION_KEY) === "shown";
+
+  if (!diplomaStatus.complete) {
+    localStorage.removeItem(DIPLOMA_CELEBRATION_KEY);
+    return;
+  }
+
+  if (!alreadyShown) {
+    const delay = document.body.classList.contains("splash-active") ? 2300 : 260;
+    window.setTimeout(() => showDiplomaEligibilityModal(calculations.levels[1]), delay);
+  }
+}
+
 function renderAll() {
   document.documentElement.dataset.theme = state.theme;
   elements.themeToggle.textContent = state.theme === "dark" ? "☀️" : "🌙";
@@ -742,6 +798,7 @@ function renderAll() {
   });
   renderSemesterCards();
   renderSummary();
+  checkDiplomaEligibilityCelebration(calculateAll());
 }
 
 function updateCourseResult(id, field, value) {
@@ -798,12 +855,21 @@ function attachEvents() {
     if (!confirmed) return;
     const theme = state.theme;
     state = { ...clone(DEFAULT_STATE), theme };
+    localStorage.removeItem(DIPLOMA_CELEBRATION_KEY);
     saveState();
     renderAll();
     showToast("Calculator data has been reset.");
   });
 
   elements.printReportBtn.addEventListener("click", () => window.print());
+
+  elements.eligibilityDoneBtn?.addEventListener("click", closeDiplomaEligibilityModal);
+  elements.diplomaEligibleModal?.querySelectorAll("[data-close-eligibility]").forEach((item) => {
+    item.addEventListener("click", closeDiplomaEligibilityModal);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeDiplomaEligibilityModal();
+  });
 
   elements.semesterCards.addEventListener("change", (event) => {
     const target = event.target;
@@ -907,6 +973,35 @@ function setupInstallExperience() {
   });
 }
 
+function shouldShowSplash() {
+  const isMobile = window.innerWidth <= 768;
+  return isMobile || isRunningStandalone();
+}
+
+function hideSplash() {
+  if (!elements.appSplash) return;
+  elements.appSplash.classList.add("hide");
+  document.body.classList.remove("splash-active");
+  window.setTimeout(() => {
+    elements.appSplash.classList.remove("show");
+    elements.appSplash.classList.remove("hide");
+  }, 420);
+}
+
+function setupSplashScreen() {
+  if (!elements.appSplash || !shouldShowSplash()) return;
+  document.body.classList.add("splash-active");
+  elements.appSplash.classList.add("show");
+
+  const finish = () => window.setTimeout(hideSplash, 1800);
+
+  if (document.readyState === "complete") {
+    finish();
+  } else {
+    window.addEventListener("load", finish, { once: true });
+  }
+}
+
 function registerServiceWorker() {
   if ("serviceWorker" in navigator && navigator.serviceWorker) {
     navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).catch((error) => {
@@ -914,6 +1009,8 @@ function registerServiceWorker() {
     });
   }
 }
+
+setupSplashScreen();
 
 renderCurriculum();
 renderGradeGuide();

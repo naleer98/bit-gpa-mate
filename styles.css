@@ -119,6 +119,189 @@ img {
   max-width: 100%;
 }
 
+
+body.splash-active,
+body.eligibility-active {
+  overflow: hidden;
+}
+
+.app-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(173, 44, 76, 0.10), transparent 26%),
+    linear-gradient(180deg, #f8f4f5 0%, #f3eeef 100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.38s ease, visibility 0.38s ease;
+}
+
+.app-splash.show {
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+}
+
+.app-splash.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.app-splash-card {
+  width: min(100%, 420px);
+  padding: 28px 24px 30px;
+  border: 1px solid rgba(127, 23, 49, 0.10);
+  border-radius: 36px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 30px 60px rgba(67, 20, 34, 0.14);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-splash-card::before,
+.app-splash-card::after {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 7px solid rgba(127, 23, 49, 0.62);
+  border-radius: 32px;
+  pointer-events: none;
+}
+
+.app-splash-card::after {
+  inset: 0;
+  border: none;
+  background:
+    radial-gradient(circle at left center, rgba(127, 23, 49, 0.82) 0 20%, transparent 21%),
+    radial-gradient(circle at right center, rgba(127, 23, 49, 0.82) 0 20%, transparent 21%),
+    radial-gradient(circle at top center, rgba(127, 23, 49, 0.82) 0 20%, transparent 21%),
+    radial-gradient(circle at bottom center, rgba(127, 23, 49, 0.82) 0 20%, transparent 21%);
+  opacity: 0.18;
+}
+
+.app-splash-logo-wrap {
+  width: 170px;
+  height: 170px;
+  margin: 16px auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 32px;
+  background: linear-gradient(180deg, #fffdfd, #f9f4f5);
+  box-shadow: inset 0 0 0 1px rgba(127, 23, 49, 0.08);
+}
+
+.app-splash-logo {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+
+.app-splash-kicker {
+  margin: 0 0 8px;
+  color: var(--brand-700);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.app-splash-title {
+  margin: 0;
+  color: var(--ink-950);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 7vw, 2.55rem);
+  line-height: 1.08;
+}
+
+.app-splash-caption {
+  margin: 10px 0 0;
+  color: var(--ink-700);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.app-splash-divider {
+  width: 84px;
+  height: 4px;
+  margin: 18px auto 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-500), var(--brand-500));
+}
+
+.app-splash-developer,
+.app-splash-role {
+  margin: 0;
+  color: var(--ink-700);
+}
+
+.app-splash-developer {
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+.app-splash-role {
+  margin-top: 4px;
+  color: var(--brand-700);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+html[data-theme="dark"] .app-splash {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(201, 82, 109, 0.18), transparent 26%),
+    linear-gradient(180deg, #181315 0%, #100d0f 100%);
+}
+
+html[data-theme="dark"] .app-splash-card {
+  background: rgba(27, 23, 25, 0.96);
+  border-color: rgba(255, 210, 220, 0.08);
+}
+
+@media (max-width: 600px) {
+  .app-splash {
+    padding: 18px;
+  }
+
+  .app-splash-card {
+    width: min(100%, 360px);
+    padding: 24px 20px 28px;
+    border-radius: 32px;
+  }
+
+  .app-splash-card::before {
+    inset: 12px;
+  }
+
+  .app-splash-logo-wrap {
+    width: 156px;
+    height: 156px;
+    margin-top: 10px;
+  }
+
+  .app-splash-logo {
+    width: 128px;
+    height: 128px;
+  }
+
+  .app-splash-caption {
+    font-size: 0.95rem;
+  }
+
+  .app-splash-developer {
+    font-size: 0.88rem;
+  }
+
+  .app-splash-role {
+    font-size: 0.9rem;
+  }
+}
+
 .skip-link {
   position: fixed;
   top: 10px;
@@ -2476,5 +2659,276 @@ footer {
   #grade-guide,
   #about {
     display: none !important;
+  }
+}
+
+
+/* Diploma eligibility celebration */
+.qualification-card.diploma-eligible {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--gold-500) 62%, var(--line));
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--gold-500) 18%, transparent);
+}
+
+.qualification-card.diploma-eligible::after {
+  content: "";
+  position: absolute;
+  inset: -45%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--gold-500) 48%, transparent) 48deg,
+    transparent 96deg
+  );
+  animation: eligibility-shine 4.8s linear infinite;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.qualification-card.diploma-eligible > * {
+  position: relative;
+  z-index: 1;
+}
+
+.status-chip.diploma-ready {
+  color: #654100;
+  background: linear-gradient(135deg, #fff1b5, #f6d46d);
+  box-shadow: 0 0 0 0 rgba(199, 149, 29, 0.38);
+  animation: eligible-badge-pulse 1.9s ease-in-out infinite;
+}
+
+html[data-theme="dark"] .status-chip.diploma-ready {
+  color: #241900;
+}
+
+@keyframes eligibility-shine {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes eligible-badge-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(199, 149, 29, 0.32); }
+  50% { transform: scale(1.045); box-shadow: 0 0 0 10px rgba(199, 149, 29, 0); }
+}
+
+.eligibility-modal[hidden] {
+  display: none;
+}
+
+.eligibility-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.eligibility-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(24, 8, 14, 0.66);
+  backdrop-filter: blur(8px);
+  animation: eligible-fade-in 0.28s ease both;
+}
+
+.eligibility-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 520px);
+  overflow: hidden;
+  padding: 38px 34px 30px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 231, 145, 0.52), transparent 33%),
+    linear-gradient(180deg, #fffdf8 0%, #fff 100%);
+  color: #281b20;
+  box-shadow: 0 34px 90px rgba(24, 8, 14, 0.34);
+  text-align: center;
+  animation: eligible-card-in 0.55s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+html[data-theme="dark"] .eligibility-card {
+  border-color: rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(222, 182, 76, 0.22), transparent 34%),
+    linear-gradient(180deg, #281f18 0%, #1b1719 100%);
+  color: var(--ink-900);
+}
+
+.eligibility-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 4;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(127, 23, 49, 0.08);
+  color: var(--brand-700);
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.eligibility-icon {
+  width: 92px;
+  height: 92px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #fff4bd, #f0c95b);
+  box-shadow: 0 18px 36px rgba(177, 126, 13, 0.24);
+  font-size: 3.3rem;
+  animation: eligible-icon-bounce 1.15s ease-in-out 0.35s both;
+}
+
+.eligibility-kicker {
+  margin: 0 0 6px;
+  color: var(--brand-700);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eligibility-card h2 {
+  margin: 0;
+  color: var(--brand-900);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 7vw, 3rem);
+  line-height: 1.05;
+}
+
+html[data-theme="dark"] .eligibility-card h2 {
+  color: var(--brand-900);
+}
+
+.eligibility-message {
+  margin: 16px auto 0;
+  max-width: 430px;
+  color: var(--ink-700);
+  font-size: 1rem;
+}
+
+.eligibility-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 24px 0 16px;
+}
+
+.eligibility-stats > div {
+  padding: 15px 12px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: color-mix(in srgb, var(--surface) 90%, var(--gold-100));
+}
+
+.eligibility-stats span,
+.eligibility-stats strong {
+  display: block;
+}
+
+.eligibility-stats span {
+  color: var(--ink-500);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.eligibility-stats strong {
+  margin-top: 3px;
+  color: var(--brand-800);
+  font-size: 1.3rem;
+}
+
+.eligibility-note {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.eligibility-done {
+  width: 100%;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.eligibility-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -24px;
+  width: 9px;
+  height: 17px;
+  border-radius: 3px;
+  opacity: 0.94;
+  animation: confetti-fall var(--fall-duration, 2.4s) ease-in var(--fall-delay, 0s) forwards;
+}
+
+@keyframes eligible-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes eligible-card-in {
+  from { opacity: 0; transform: translateY(28px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes eligible-icon-bounce {
+  0% { transform: scale(0.4) rotate(-14deg); opacity: 0; }
+  55% { transform: scale(1.12) rotate(5deg); opacity: 1; }
+  75% { transform: scale(0.96) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translate3d(0, -20px, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate3d(var(--drift, 30px), 560px, 0) rotate(var(--spin, 540deg)); opacity: 0; }
+}
+
+@media (max-width: 560px) {
+  .eligibility-modal {
+    padding: 14px;
+  }
+
+  .eligibility-card {
+    padding: 34px 20px 24px;
+    border-radius: 26px;
+  }
+
+  .eligibility-icon {
+    width: 82px;
+    height: 82px;
+    font-size: 3rem;
+  }
+
+  .eligibility-message {
+    font-size: 0.94rem;
+  }
+
+  .eligibility-stats {
+    gap: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qualification-card.diploma-eligible::after,
+  .status-chip.diploma-ready,
+  .eligibility-card,
+  .eligibility-backdrop,
+  .eligibility-icon,
+  .confetti-piece {
+    animation: none !important;
   }
 }

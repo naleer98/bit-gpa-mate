@@ -9,10 +9,24 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles.css?v=5.0.0" />
+  <link rel="stylesheet" href="styles.css?v=5.2.0" />
 </head>
 <body>
   <a class="skip-link" href="#dashboard">Skip to content</a>
+
+  <div id="appSplash" class="app-splash" aria-hidden="true">
+    <div class="app-splash-card">
+      <div class="app-splash-logo-wrap">
+        <img src="assets/uom-crest.png" alt="University of Moratuwa crest" class="app-splash-logo" />
+      </div>
+      <p class="app-splash-kicker">University of Moratuwa · BIT</p>
+      <h1 class="app-splash-title">BIT GPA Mate</h1>
+      <p class="app-splash-caption">Calculate Your GPA Own Way</p>
+      <div class="app-splash-divider"></div>
+      <p class="app-splash-developer">Developed by : <strong>Naleer Khan BSc (Hons) IT, UOM</strong></p>
+      <p class="app-splash-role">Trainee Software Engineer</p>
+    </div>
+  </div>
 
   <div class="app-shell">
     <header class="site-header">
@@ -360,7 +374,26 @@
     </div>
   </dialog>
 
+
+  <div id="diplomaEligibleModal" class="eligibility-modal" role="dialog" aria-modal="true" aria-labelledby="diplomaEligibleTitle" hidden>
+    <div class="eligibility-backdrop" data-close-eligibility></div>
+    <div class="eligibility-card">
+      <div id="eligibilityConfetti" class="eligibility-confetti" aria-hidden="true"></div>
+      <button class="eligibility-close" type="button" aria-label="Close" data-close-eligibility>×</button>
+      <div class="eligibility-icon" aria-hidden="true">🎓</div>
+      <p class="eligibility-kicker">Level 1 completed</p>
+      <h2 id="diplomaEligibleTitle">Diploma Eligible!</h2>
+      <p class="eligibility-message">Congratulations! Your entered results currently satisfy the Level 1 GPA credit and minimum LGPA requirements for the Diploma.</p>
+      <div class="eligibility-stats">
+        <div><span>Earned credits</span><strong id="diplomaEligibleCredits">30 / 30</strong></div>
+        <div><span>Level 1 LGPA</span><strong id="diplomaEligibleLgpa">2.00+</strong></div>
+      </div>
+      <p class="eligibility-note">*Final certificate eligibility also depends on all official Faculty requirements and University records.</p>
+      <button id="eligibilityDoneBtn" class="primary-btn eligibility-done" type="button">Awesome! ✨</button>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=5.0.0"></script>
+  <script src="app.js?v=5.2.0"></script>
 </body>
 </html>
