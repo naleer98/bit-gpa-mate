@@ -238,8 +238,13 @@ function showToast(message) {
 }
 
 function switchPage(pageId) {
-  elements.navButtons.forEach((button) => button.classList.toggle("active", button.dataset.page === pageId));
+  elements.navButtons.forEach((button) => {
+    const isActive = button.dataset.page === pageId;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-current", isActive ? "page" : "false");
+  });
   elements.pages.forEach((page) => page.classList.toggle("active-page", page.id === pageId));
+  if (window.location.hash !== `#${pageId}`) history.replaceState(null, "", `#${pageId}`);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -729,7 +734,12 @@ function renderAll() {
   document.documentElement.dataset.theme = state.theme;
   elements.themeToggle.textContent = state.theme === "dark" ? "☀️" : "🌙";
   elements.inputMode.value = state.inputMode;
-  elements.levelTabs.forEach((button) => button.classList.toggle("active", Number(button.dataset.level) === state.activeLevel));
+  elements.levelTabs.forEach((button) => {
+    const isActive = Number(button.dataset.level) === state.activeLevel;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+    button.tabIndex = isActive ? 0 : -1;
+  });
   renderSemesterCards();
   renderSummary();
 }
@@ -911,3 +921,12 @@ renderAll();
 attachEvents();
 setupInstallExperience();
 registerServiceWorker();
+
+const initialPage = window.location.hash.replace("#", "");
+if ([...elements.pages].some((page) => page.id === initialPage)) {
+  switchPage(initialPage);
+} else {
+  elements.navButtons.forEach((button) => {
+    button.setAttribute("aria-current", button.dataset.page === "dashboard" ? "page" : "false");
+  });
+}

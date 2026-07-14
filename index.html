@@ -3,91 +3,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#7b1730" />
+  <meta name="theme-color" content="#6f1028" />
   <meta name="description" content="Student-friendly level-by-level GPA and qualification tracker for University of Moratuwa BIT students." />
-  <title>BIT GPA Mate | UOM</title>
+  <title>BIT GPA Mate | University of Moratuwa</title>
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=5.0.0" />
 </head>
 <body>
+  <a class="skip-link" href="#dashboard">Skip to content</a>
+
   <div class="app-shell">
-    <header class="topbar">
-      <a class="brand-wrap" href="#dashboard" data-jump="dashboard" aria-label="BIT GPA Mate home">
-        <img class="brand-crest" src="assets/uom-crest.png" alt="University of Moratuwa crest" />
-        <div>
-          <p class="eyebrow">University of Moratuwa · BIT</p>
-          <h1>BIT GPA Mate</h1>
-          <p class="subtitle">Level GPA · Qualification tracker · Degree class</p>
+    <header class="site-header">
+      <div class="topbar">
+        <a class="brand-wrap" href="#dashboard" data-jump="dashboard" aria-label="BIT GPA Mate dashboard">
+          <span class="brand-emblem">
+            <img class="brand-crest" src="assets/uom-crest.png" alt="University of Moratuwa crest" />
+          </span>
+          <span class="brand-copy">
+            <span class="eyebrow">University of Moratuwa · CODL</span>
+            <strong class="brand-title">BIT GPA Mate</strong>
+            <span class="subtitle">Level GPA · Qualification tracker · Degree class</span>
+          </span>
+        </a>
+
+        <div class="top-actions">
+          <span class="unofficial-badge"><span class="badge-dot"></span> Unofficial student tool</span>
+          <button id="installAppBtn" class="install-app-btn hidden" type="button" aria-label="Install BIT GPA Mate">
+            <span>↓</span> Install App
+          </button>
+          <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
         </div>
-      </a>
-
-      <div class="top-actions">
-        <span class="unofficial-badge">Unofficial student tool</span>
-        <button id="installAppBtn" class="install-app-btn hidden" type="button">⬇ Install App</button>
-        <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
       </div>
-    </header>
 
-    <nav class="main-nav" aria-label="Main navigation">
-      <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
-      <button class="nav-btn" data-page="calculator"><span class="nav-icon">🧮</span><span>Calculator</span></button>
-      <button class="nav-btn" data-page="curriculum"><span class="nav-icon">📚</span><span>Curriculum</span></button>
-      <button class="nav-btn" data-page="grade-guide"><span class="nav-icon">🎓</span><span>Grades</span></button>
-      <button class="nav-btn" data-page="about"><span class="nav-icon">ⓘ</span><span>About</span></button>
-    </nav>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-btn active" data-page="dashboard" type="button">
+          <span class="nav-icon">⌂</span><span>Dashboard</span>
+        </button>
+        <button class="nav-btn" data-page="calculator" type="button">
+          <span class="nav-icon">∑</span><span>Calculator</span>
+        </button>
+        <button class="nav-btn" data-page="curriculum" type="button">
+          <span class="nav-icon">▤</span><span>Curriculum</span>
+        </button>
+        <button class="nav-btn" data-page="grade-guide" type="button">
+          <span class="nav-icon">A+</span><span>Grades</span>
+        </button>
+        <button class="nav-btn" data-page="about" type="button">
+          <span class="nav-icon">i</span><span>About</span>
+        </button>
+      </nav>
+    </header>
 
     <main>
       <section id="dashboard" class="page active-page">
         <div class="hero-card">
           <div class="hero-content">
-            <span class="hero-chip">2024 Curriculum · Final Update</span>
-            <p class="section-kicker">Your BIT academic journey</p>
-            <h2>Diploma → Higher Diploma → BIT Degree</h2>
-            <p>
-              Track every semester, check each Level LGPA separately, and see whether the academic
-              requirements for the next qualification are currently met.
+            <div class="hero-meta-row">
+              <span class="hero-chip">2024 Curriculum</span>
+              <span class="hero-version">Premium UI · v5.0</span>
+            </div>
+            <p class="section-kicker">Your complete BIT academic companion</p>
+            <h1 class="hero-title">Plan every level.<br /><span>Know where you stand.</span></h1>
+            <p class="hero-description">
+              Calculate Semester GPA and Level GPA, follow your Diploma → Higher Diploma → Degree journey,
+              and check your provisional degree classification in one student-friendly app.
             </p>
             <div class="hero-actions">
-              <button class="primary-btn" type="button" data-jump="calculator">Calculate by level</button>
-              <button id="printReportBtn" class="secondary-btn" type="button">Print / Save PDF</button>
+              <button class="primary-btn" type="button" data-jump="calculator">
+                Start calculating <span aria-hidden="true">→</span>
+              </button>
+              <button id="printReportBtn" class="secondary-btn" type="button">
+                Print / Save PDF
+              </button>
+            </div>
+            <div class="hero-trust-row" aria-label="Application benefits">
+              <span>✓ Auto-saved</span>
+              <span>✓ Works offline</span>
+              <span>✓ Privacy-friendly</span>
             </div>
           </div>
-          <div class="hero-visual">
-            <img class="hero-logo" src="assets/bit-uom-logo.png" alt="BIT University of Moratuwa logo" />
+
+          <div class="hero-visual" aria-label="BIT qualification path">
+            <div class="hero-logo-frame">
+              <img class="hero-logo" src="assets/bit-uom-logo.png" alt="Bachelor of Information Technology, University of Moratuwa" />
+            </div>
+            <div class="journey-mini">
+              <div><span>01</span><strong>Diploma</strong><small>Level 1</small></div>
+              <i>→</i>
+              <div><span>02</span><strong>Higher Diploma</strong><small>Level 2</small></div>
+              <i>→</i>
+              <div><span>03</span><strong>BIT Degree</strong><small>Level 3</small></div>
+            </div>
             <div class="hero-mini-card">
-              <span>Required</span>
+              <span>Full journey requirement</span>
               <strong>90 GPA + 3 NGPA</strong>
-              <small>Normal Level 1 entry path</small>
+              <small>For students commencing from Level 1</small>
             </div>
           </div>
         </div>
 
         <div class="section-heading">
           <div>
-            <p class="section-kicker">Level-by-level awards</p>
+            <p class="section-kicker">Academic pathway</p>
             <h2>Qualification journey</h2>
           </div>
-          <p class="muted compact-note">Status is a planning estimate; official awards depend on all Faculty requirements.</p>
+          <p class="muted compact-note">A planning estimate based on entered results. Official awards depend on all Faculty requirements.</p>
         </div>
         <div id="qualificationJourney" class="qualification-grid"></div>
 
         <div class="summary-grid" id="summaryGrid"></div>
 
         <div class="dashboard-grid">
-          <article class="panel">
+          <article class="panel performance-panel">
             <div class="panel-heading">
               <div>
-                <p class="section-kicker">Level performance</p>
-                <h3>LGPA overview</h3>
+                <p class="section-kicker">Academic performance</p>
+                <h3>Level GPA overview</h3>
               </div>
-              <button class="text-btn" type="button" data-jump="calculator">Open calculator →</button>
+              <button class="text-btn" type="button" data-jump="calculator">Open calculator <span>→</span></button>
             </div>
             <div id="levelOverview" class="level-overview"></div>
           </article>
 
           <article class="panel class-panel">
+            <div class="class-panel-icon">★</div>
             <p class="section-kicker">Degree classification</p>
             <h3 id="classTitle">Not enough Level 3 grades</h3>
             <p id="classMessage">Enter Level 3 results to see the provisional degree class.</p>
@@ -100,99 +141,124 @@
           </article>
         </div>
 
-        <article class="panel">
+        <article class="panel advice-panel">
           <div class="panel-heading">
             <div>
-              <p class="section-kicker">Academic helper</p>
+              <p class="section-kicker">Smart academic helper</p>
               <h3>Repeat & pending advice</h3>
             </div>
+            <span class="panel-pill">Live from your entries</span>
           </div>
           <div id="repeatAdvice" class="advice-list"></div>
         </article>
 
         <article class="panel quick-guide">
-          <div>
-            <p class="section-kicker">Quick start</p>
-            <h3>Three easy steps</h3>
+          <div class="quick-guide-title">
+            <p class="section-kicker">Simple workflow</p>
+            <h3>Three steps to your result</h3>
+            <p class="muted">No account. No upload. Just select and calculate.</p>
           </div>
           <div class="steps-grid">
-            <div class="step-card"><span>1</span><h4>Select a level</h4><p>Level 1, Level 2, or Level 3.</p></div>
-            <div class="step-card"><span>2</span><h4>Enter results</h4><p>Use grades or percentage marks.</p></div>
-            <div class="step-card"><span>3</span><h4>Check award status</h4><p>See LGPA, credits, and qualification progress.</p></div>
+            <div class="step-card"><span>1</span><div><h4>Select a level</h4><p>Choose Diploma, Higher Diploma, or Degree.</p></div></div>
+            <div class="step-card"><span>2</span><div><h4>Enter results</h4><p>Use letter grades or percentage marks.</p></div></div>
+            <div class="step-card"><span>3</span><div><h4>Check progress</h4><p>See SGPA, LGPA, credits, and award status.</p></div></div>
           </div>
         </article>
       </section>
 
       <section id="calculator" class="page">
-        <div class="page-title-row">
+        <div class="page-hero compact-page-hero">
           <div>
             <p class="section-kicker">Level GPA calculator</p>
             <h2>Enter your BIT results</h2>
-            <p class="muted">Results save automatically on this device.</p>
+            <p class="muted">Every change is saved automatically on this device.</p>
           </div>
-          <div class="toolbar">
-            <label class="field-label" for="inputMode">Input mode</label>
-            <select id="inputMode" class="control-select">
-              <option value="grade">Grade</option>
-              <option value="marks">Marks</option>
-            </select>
+          <div class="toolbar-card">
+            <div class="toolbar-field">
+              <label class="field-label" for="inputMode">Input mode</label>
+              <select id="inputMode" class="control-select">
+                <option value="grade">Letter grade</option>
+                <option value="marks">Percentage marks</option>
+              </select>
+            </div>
             <button id="resetBtn" class="danger-outline-btn" type="button">Reset all</button>
           </div>
         </div>
 
         <div class="level-switcher" role="tablist" aria-label="Choose BIT level">
           <button class="level-tab active" type="button" data-level="1" role="tab">
-            <span>Level 1</span><strong>Diploma</strong>
+            <span class="level-tab-number">01</span>
+            <span class="level-tab-copy"><small>Level 1</small><strong>Diploma</strong></span>
+            <span class="level-tab-arrow">→</span>
           </button>
           <button class="level-tab" type="button" data-level="2" role="tab">
-            <span>Level 2</span><strong>Higher Diploma</strong>
+            <span class="level-tab-number">02</span>
+            <span class="level-tab-copy"><small>Level 2</small><strong>Higher Diploma</strong></span>
+            <span class="level-tab-arrow">→</span>
           </button>
           <button class="level-tab" type="button" data-level="3" role="tab">
-            <span>Level 3</span><strong>BIT Degree</strong>
+            <span class="level-tab-number">03</span>
+            <span class="level-tab-copy"><small>Level 3</small><strong>BIT Degree</strong></span>
+            <span class="level-tab-arrow">→</span>
           </button>
         </div>
 
         <div id="activeLevelSummary" class="active-level-summary"></div>
 
         <div class="notice-card">
-          <strong>Marks mode:</strong> 0–34 is displayed as <strong>I</strong>, assuming CA eligibility was satisfied.
-          Use <strong>Grade mode → F</strong> when CA was failed or not completed.
+          <span class="notice-icon">!</span>
+          <div>
+            <strong>Marks mode note</strong>
+            <p>0–34 is displayed as <strong>I</strong>, assuming CA eligibility was satisfied. Select <strong>Grade mode → F</strong> when CA was failed or not completed.</p>
+          </div>
         </div>
 
         <div id="semesterCards" class="semester-stack"></div>
       </section>
 
       <section id="curriculum" class="page">
-        <div class="page-title-row">
+        <div class="page-hero compact-page-hero">
           <div>
             <p class="section-kicker">2024 curriculum</p>
             <h2>BIT course structure</h2>
-            <p class="muted">Level 1: 30 GPA · Level 2: 30 GPA + 3 NGPA · Level 3: 30 GPA.</p>
+            <p class="muted">All compulsory, NGPA, and elective credit requirements organised level by level.</p>
+          </div>
+          <div class="credit-total-card">
+            <span>Total degree path</span>
+            <strong>90 GPA + 3 NGPA</strong>
           </div>
         </div>
+
         <div class="award-map">
-          <div><span>Level 1</span><strong>Diploma Level</strong></div>
+          <div><span class="award-map-index">01</span><span>Level 1</span><strong>Diploma</strong><small>30 GPA credits</small></div>
           <b>→</b>
-          <div><span>Level 2</span><strong>Higher Diploma Level</strong></div>
+          <div><span class="award-map-index">02</span><span>Level 2</span><strong>Higher Diploma</strong><small>30 GPA + 3 NGPA</small></div>
           <b>→</b>
-          <div><span>Level 3</span><strong>Degree Level</strong></div>
+          <div><span class="award-map-index">03</span><span>Level 3</span><strong>BIT Degree</strong><small>18 compulsory + 12 elective</small></div>
         </div>
         <div id="curriculumContent"></div>
       </section>
 
       <section id="grade-guide" class="page">
-        <div class="page-title-row">
+        <div class="page-hero compact-page-hero">
           <div>
-            <p class="section-kicker">Handbook-based calculator rules</p>
-            <h2>Grade points & repeat rules</h2>
+            <p class="section-kicker">Handbook-based rules</p>
+            <h2>Grade points & repeat guidance</h2>
+            <p class="muted">A quick reference for marks, grade points, credit eligibility, and repeat outcomes.</p>
+          </div>
+          <div class="credit-total-card grade-highlight-card">
+            <span>Minimum credit grade</span>
+            <strong>D or above</strong>
           </div>
         </div>
 
         <div class="guide-grid">
           <article class="panel">
-            <h3>Grade scale</h3>
+            <div class="panel-heading">
+              <div><p class="section-kicker">Reference table</p><h3>Grade scale</h3></div>
+            </div>
             <div class="table-wrap">
-              <table class="data-table">
+              <table class="data-table grade-data-table">
                 <thead><tr><th>Marks</th><th>Grade</th><th>Grade point</th><th>Meaning</th></tr></thead>
                 <tbody id="gradeTableBody"></tbody>
               </table>
@@ -200,6 +266,8 @@
           </article>
 
           <article class="panel rules-card">
+            <div class="rules-icon">✓</div>
+            <p class="section-kicker">Must know</p>
             <h3>Important rules</h3>
             <ul class="rule-list">
               <li><strong>D or above</strong> earns course credit.</li>
@@ -209,53 +277,59 @@
               <li><strong>Level 3:</strong> 30 GPA credits for BIT Degree requirements.</li>
               <li><strong>F:</strong> repeat CA + semester exam; repeat grade capped at C.</li>
               <li><strong>I:</strong> repeat semester exam only; improvement capped at C.</li>
-              <li><strong>T:</strong> next semester exam is treated as a first attempt.</li>
-              <li><strong>Degree class:</strong> based on Level 3 LGPA, subject to official time and other conditions.</li>
+              <li><strong>T:</strong> next exam sitting is treated as a first attempt.</li>
+              <li><strong>Degree class:</strong> based on Level 3 LGPA, subject to official conditions.</li>
             </ul>
           </article>
         </div>
 
         <article class="panel formula-panel">
-          <h3>GPA formula</h3>
-          <p class="formula">GPA = Σ (Course credits × Grade point) ÷ Σ Course credits</p>
-          <p class="muted">SGPA uses one semester; LGPA uses both semesters of the selected level.</p>
+          <div class="formula-copy">
+            <p class="section-kicker">Weighted calculation</p>
+            <h3>GPA formula</h3>
+            <p class="muted">SGPA uses one semester. LGPA uses the corresponding level modules.</p>
+          </div>
+          <p class="formula">GPA = Σ (Credits × Grade Point) ÷ Σ Credits</p>
         </article>
       </section>
 
       <section id="about" class="page">
+        <div class="page-hero about-hero">
+          <div>
+            <span class="hero-chip">Student-built project</span>
+            <p class="section-kicker">About BIT GPA Mate</p>
+            <h2>Made to make BIT progress easier to understand.</h2>
+            <p class="muted">An offline-first GPA and qualification planning tool based on the University of Moratuwa CODL BIT 2024 Student Handbook.</p>
+          </div>
+          <img src="assets/uom-crest.png" alt="University of Moratuwa crest" />
+        </div>
+
         <div class="about-layout">
           <article class="panel about-card">
-            <img src="assets/uom-crest.png" alt="University of Moratuwa crest" />
+            <div class="about-icon">BIT</div>
             <div>
-              <p class="section-kicker">About this project</p>
-              <h2>Made for UOM BIT students</h2>
-              <p>
-                An offline-first GPA and qualification planning tool based on the supplied University of
-                Moratuwa CODL BIT 2024 Student Handbook.
-              </p>
-              <p>
-                This is not an official University system. Always verify final results, eligibility, and awards
-                using official records and CODL/FIT guidance.
-              </p>
+              <p class="section-kicker">Purpose</p>
+              <h2>Built for UOM BIT students</h2>
+              <p>Track grades, GPA, credits, level awards, and degree classification without sending results to a server.</p>
+              <p>This is not an official University system. Always verify final results, eligibility, and awards using official records and CODL/FIT guidance.</p>
             </div>
           </article>
 
           <article class="panel developer-card">
-            <span class="developer-icon">&lt;/&gt;</span>
-            <p class="section-kicker">Developer</p>
+            <div class="developer-icon">&lt;/&gt;</div>
+            <p class="section-kicker">Designed & developed by</p>
             <h2>Naleer Khan</h2>
             <p class="developer-degree">BSc (Hons) IT · UOM</p>
             <p class="developer-role">Trainee Software Engineer</p>
-            <div class="developer-tags"><span>Student-first UI</span><span>Offline PWA</span><span>Privacy-friendly</span></div>
+            <div class="developer-tags"><span>Student-first UX</span><span>Offline PWA</span><span>Privacy-friendly</span></div>
           </article>
 
           <article class="panel info-card">
-            <h3>🔒 Privacy</h3>
-            <p>Your results remain in your browser using local storage. Nothing is uploaded.</p>
-            <h3>📴 Offline support</h3>
-            <p>After the first successful load, the PWA can work offline in supported browsers.</p>
-            <h3>📲 Installable</h3>
-            <p>Use “Install App” or “Add to Home Screen” to use it like a mobile app.</p>
+            <div class="feature-grid">
+              <div><span>🔒</span><h3>Private by design</h3><p>Your results stay in local browser storage. Nothing is uploaded.</p></div>
+              <div><span>📴</span><h3>Offline-ready</h3><p>After the first load, supported browsers can continue using the PWA offline.</p></div>
+              <div><span>📲</span><h3>Installable</h3><p>Add it to your home screen and use it like a native mobile app.</p></div>
+            </div>
           </article>
         </div>
       </section>
@@ -263,8 +337,8 @@
 
     <footer>
       <div class="footer-brand">
-        <strong>BIT GPA Mate</strong>
-        <span>Unofficial student tool · Verify with official University records.</span>
+        <span class="footer-mark">BIT</span>
+        <div><strong>BIT GPA Mate</strong><span>Unofficial student tool · Verify with official University records.</span></div>
       </div>
       <div class="footer-developer">
         <span>Developed by</span>
@@ -287,6 +361,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js"></script>
+  <script src="app.js?v=5.0.0"></script>
 </body>
 </html>

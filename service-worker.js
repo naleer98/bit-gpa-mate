@@ -1,12 +1,12 @@
 "use strict";
 
-const CACHE_NAME = "bit-gpa-mate-v3-final";
+const CACHE_NAME = "bit-gpa-mate-v5-premium-ui";
 const BASE_URL = new URL("./", self.location.href);
 const APP_FILES = [
   "",
   "index.html",
-  "styles.css",
-  "app.js",
+  "styles.css?v=5.0.0",
+  "app.js?v=5.0.0",
   "manifest.json",
   "assets/uom-crest.png",
   "assets/bit-uom-logo.png",
@@ -30,25 +30,39 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+async function networkFirst(request, fallbackUrl) {
+  try {
+    const response = await fetch(request, { cache: "no-store" });
+    if (response && response.status === 200) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    return (await caches.match(request, { ignoreSearch: false }))
+      || (fallbackUrl ? await caches.match(fallbackUrl, { ignoreSearch: true }) : undefined)
+      || Response.error();
+  }
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-  if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
+  const url = new URL(request.url);
+
+  if (request.method !== "GET" || url.origin !== self.location.origin) return;
 
   if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-          return response;
-        })
-        .catch(() => caches.match(new URL("index.html", BASE_URL).href))
-    );
+    event.respondWith(networkFirst(request, new URL("index.html", BASE_URL).href));
+    return;
+  }
+
+  if (["style", "script"].includes(request.destination)) {
+    event.respondWith(networkFirst(request));
     return;
   }
 
   event.respondWith(
-    caches.match(request).then((cached) => {
+    caches.match(request, { ignoreSearch: false }).then((cached) => {
       if (cached) return cached;
       return fetch(request).then((response) => {
         if (!response || response.status !== 200 || response.type === "opaque") return response;
