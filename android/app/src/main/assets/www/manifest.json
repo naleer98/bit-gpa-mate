@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "BIT GPA Mate - UOM Premium",
+  "name": "BIT GPA Mate - UOM",
   "short_name": "BIT GPA",
-  "description": "Premium level-by-level GPA, qualification progress and degree class tracker for University of Moratuwa BIT students.",
+  "description": "Flutter-inspired level-by-level GPA, qualification progress and degree class tracker for University of Moratuwa BIT students.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

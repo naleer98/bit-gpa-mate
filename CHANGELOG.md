@@ -1,3 +1,14 @@
+# Changelog
+
+## v6.0 — Flutter-inspired UI final
+
+- Recreated the app shell with a Material/Flutter-inspired top app bar.
+- Added a glass-style University of Moratuwa brand card, polished logo treatment, and compact mobile title layout.
+- Added a floating rounded mobile navigation bar with a clearer active state.
+- Improved elevation, card shapes, touch feedback, spacing, and mobile responsiveness.
+- Kept all GPA, qualification, offline, eligibility animation, Android, and signed-release functionality unchanged.
+- Android version updated to 1.1.0 (versionCode 2).
+
 # Android APK Build Fix
 
 - Fixed Android 12 splash theme resource compilation.

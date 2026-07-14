@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
         settings.setDisplayZoomControls(false);
         settings.setSupportZoom(false);
         settings.setMediaPlaybackRequiresUserGesture(true);
-        settings.setUserAgentString(settings.getUserAgentString() + " BITGPAMateAndroid/1.0");
+        settings.setUserAgentString(settings.getUserAgentString() + " BITGPAMateAndroid/1.1");
 
         webView.setBackgroundColor(getColor(R.color.splash_background));
         webView.setOverScrollMode(View.OVER_SCROLL_NEVER);

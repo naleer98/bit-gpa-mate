@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles.css?v=5.2.0" />
+  <link rel="stylesheet" href="styles.css?v=6.0.0" />
 </head>
 <body>
   <a class="skip-link" href="#dashboard">Skip to content</a>
@@ -31,23 +31,31 @@
   <div class="app-shell">
     <header class="site-header">
       <div class="topbar">
+        <span class="appbar-orb appbar-orb-one" aria-hidden="true"></span>
+        <span class="appbar-orb appbar-orb-two" aria-hidden="true"></span>
+
         <a class="brand-wrap" href="#dashboard" data-jump="dashboard" aria-label="BIT GPA Mate dashboard">
           <span class="brand-emblem">
+            <span class="brand-logo-ring" aria-hidden="true"></span>
             <img class="brand-crest" src="assets/uom-crest.png" alt="University of Moratuwa crest" />
           </span>
           <span class="brand-copy">
-            <span class="eyebrow">University of Moratuwa · CODL</span>
-            <strong class="brand-title">BIT GPA Mate</strong>
+            <span class="eyebrow"><span class="university-dot" aria-hidden="true"></span> University of Moratuwa · CODL</span>
+            <span class="brand-title-row">
+              <strong class="brand-title">BIT GPA Mate</strong>
+              <span class="app-version-pill">v6</span>
+            </span>
             <span class="subtitle">Level GPA · Qualification tracker · Degree class</span>
+            <span class="mobile-tool-badge"><span class="badge-dot"></span> Unofficial student tool</span>
           </span>
         </a>
 
         <div class="top-actions">
           <span class="unofficial-badge"><span class="badge-dot"></span> Unofficial student tool</span>
           <button id="installAppBtn" class="install-app-btn hidden" type="button" aria-label="Install BIT GPA Mate">
-            <span>↓</span> Install App
+            <span class="install-icon" aria-hidden="true">↓</span><span>Install App</span>
           </button>
-          <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+          <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode"><span class="theme-button-icon">🌙</span></button>
         </div>
       </div>
 
@@ -76,7 +84,7 @@
           <div class="hero-content">
             <div class="hero-meta-row">
               <span class="hero-chip">2024 Curriculum</span>
-              <span class="hero-version">Premium UI · v5.0</span>
+              <span class="hero-version">Flutter-inspired UI · v6.0</span>
             </div>
             <p class="section-kicker">Your complete BIT academic companion</p>
             <h1 class="hero-title">Plan every level.<br /><span>Know where you stand.</span></h1>
@@ -394,6 +402,6 @@
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=5.2.0"></script>
+  <script src="app.js?v=6.0.0"></script>
 </body>
 </html>

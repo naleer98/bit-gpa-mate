@@ -82,8 +82,8 @@ jobs:
       - name: Prepare release files
         run: |
           mkdir -p release-files
-          cp android/app/build/outputs/apk/release/app-release.apk release-files/BIT-GPA-Mate-v1.0.0.apk
-          cp android/app/build/outputs/bundle/release/app-release.aab release-files/BIT-GPA-Mate-v1.0.0.aab
+          cp android/app/build/outputs/apk/release/app-release.apk release-files/BIT-GPA-Mate-v1.1.0.apk
+          cp android/app/build/outputs/bundle/release/app-release.aab release-files/BIT-GPA-Mate-v1.1.0.aab
           sha256sum release-files/* > release-files/SHA256SUMS.txt
 
       - name: Remove temporary keystore
