@@ -1,3 +1,9 @@
+# Android APK Build Fix
+
+- Fixed Android 12 splash theme resource compilation.
+- Updated APK workflow action versions.
+- Added detailed Gradle logging.
+
 # Changelog
 
 ## v5.2 — Diploma Eligibility Celebration
