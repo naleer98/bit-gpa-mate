@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BIT GPA Mate</string>
+    <string name="splash_university">UNIVERSITY OF MORATUWA · BIT</string>
+    <string name="splash_title">BIT GPA Mate</string>
+    <string name="splash_caption">Calculate Your GPA Own Way</string>
+    <string name="developer_name">Developed by : Naleer Khan Bsc (Hons IT) UOM</string>
+    <string name="developer_role">Trainee Software Engineer</string>
+</resources>

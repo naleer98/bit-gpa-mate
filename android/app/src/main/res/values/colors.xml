@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_maroon">#7F1731</color>
+    <color name="brand_dark">#520B1F</color>
+    <color name="splash_background">#F6F3F4</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="ink">#211B1E</color>
+    <color name="muted">#786D72</color>
+    <color name="gold">#C7951D</color>
+</resources>
