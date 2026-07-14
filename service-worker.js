@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "bit-gpa-mate-v2";
+const CACHE_NAME = "bit-gpa-mate-v3-final";
 const BASE_URL = new URL("./", self.location.href);
 const APP_FILES = [
   "",

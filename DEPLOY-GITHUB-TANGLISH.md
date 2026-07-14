@@ -1,73 +1,55 @@
-# GitHub-la Deploy செய்வது — Easy Tanglish Guide
+# GitHub Pages Deploy — Easy Tanglish Guide
 
-இந்த folder already **GitHub Pages ready**. Build command / npm install எதுவும் தேவையில்லை.
+## 1. Old project replace pannunga
 
-## Method 1 — GitHub website மூலம் upload
+ZIP extract pannitu, inside irukkura ellaa files/folders-ai copy pannunga.
 
-1. GitHub open செய்து **New repository** click செய்யுங்கள்.
-2. Repository name: `bit-gpa-mate` மாதிரி கொடுக்கலாம்.
-3. Repository-ஐ **Public** ஆக create செய்யுங்கள்.
-4. **Add file → Upload files** open செய்யுங்கள்.
-5. இந்த project folder உள்ளே இருக்கும் எல்லா files/folders-ஐ upload செய்யுங்கள்.
-   - `.github` hidden folder-மும் upload ஆக வேண்டும்.
-   - `index.html` repository root-ல் இருக்க வேண்டும்.
-6. **Commit changes** click செய்யுங்கள்.
-7. Repository-ல் **Settings → Pages** open செய்யுங்கள்.
-8. **Build and deployment → Source** பகுதியில் **GitHub Actions** select செய்யுங்கள்.
-9. **Actions** tab open செய்து deployment complete ஆகும் வரை wait செய்யுங்கள்.
-10. Green tick வந்ததும் **Settings → Pages**-ல் live website link கிடைக்கும்.
+GitHub Desktop-la:
 
-Usually link format:
+`Repository → Show in Explorer`
 
-```text
-https://YOUR-USERNAME.github.io/bit-gpa-mate/
-```
+Open aagura `bit-gpa-mate` folder-kulla paste pannunga. Existing files கேட்டால் **Replace** select pannunga.
 
-## Method 2 — VS Code / Git commands
+Important: `index.html` repository root-la irukkanum.
 
-Project folder terminal-ல்:
+## 2. Commit & Push
 
-```bash
-git init
-git add .
-git commit -m "Initial BIT GPA Mate app"
-git branch -M main
-git remote add origin https://github.com/YOUR-USERNAME/bit-gpa-mate.git
-git push -u origin main
-```
+GitHub Desktop Changes section-la summary:
 
-அதற்குப் பிறகு GitHub repository-ல் **Settings → Pages → Source → GitHub Actions** select செய்யுங்கள்.
+`Final level-by-level GPA update`
 
-## App install செய்வது
+Then:
 
-### Android / Desktop Chrome அல்லது Edge
+`Commit to main → Push origin`
 
-- Live website open செய்யுங்கள்.
-- மேலே வரும் **Install App** button click செய்யுங்கள்.
-- Button வரவில்லை என்றால் browser menu → **Install app / Add to Home screen**.
+## 3. GitHub Pages setting
 
-### iPhone / iPad
+GitHub website-la:
 
-- Safari-ல் website open செய்யுங்கள்.
-- Share icon tap செய்யுங்கள்.
-- **Add to Home Screen** select செய்யுங்கள்.
+`Settings → Pages → Source → GitHub Actions`
 
-## Update செய்வது
+## 4. Workflow run
 
-Files edit செய்து GitHub-க்கு push/commit செய்தால் workflow automatic-a latest version deploy செய்யும்.
+`Actions → Deploy BIT GPA Mate to GitHub Pages`
 
-## Common problems
+Failed old run irundhaal:
 
-### 404 வருகிறது
+`Re-run jobs → Re-run all jobs`
 
-- `index.html` repository root-ல் இருக்கிறதா check செய்யுங்கள்.
-- Settings → Pages source **GitHub Actions** ஆக இருக்கிறதா check செய்யுங்கள்.
-- Actions tab-ல் red error இருக்கிறதா பாருங்கள்.
+New push normally automatic-a run aagum.
 
-### Logo/CSS load ஆகவில்லை
+## 5. Live link
 
-இந்த project relative paths use செய்கிறது. Folder structure மாற்றாமல் upload செய்யுங்கள்.
+Usually:
 
-### `.github` folder upload ஆகவில்லை
+`https://naleer98.github.io/bit-gpa-mate/`
 
-Windows File Explorer hidden files show செய்யாமல் இருக்கலாம். ZIP extract செய்த பிறகு VS Code மூலம் முழு folder-ஐ GitHub-க்கு push செய்வது easiest.
+Green tick vandha deploy success.
+
+## Browser old version kaattina
+
+Service worker cache nala old UI varalaam. Try:
+
+- Hard refresh: `Ctrl + Shift + R`
+- Chrome site settings-la stored data clear pannunga
+- PWA install pannirundhaal uninstall panni site-a refresh pannunga

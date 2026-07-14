@@ -1,23 +1,27 @@
-# BIT GPA Mate — GitHub Pages PWA
+# BIT GPA Mate — Final Update
 
-A student-friendly, unofficial GPA calculator for University of Moratuwa CODL BIT students, based on the supplied 2024 curriculum handbook screenshots.
+A student-friendly, installable GPA and qualification progress tracker for the University of Moratuwa BIT 2024 curriculum.
 
-## App features
+## Main features
 
-- Semester GPA (SGPA), Level GPA (LGPA), and overall CGPA
-- Level 3 degree class estimate
-- Marks mode and grade mode
-- Level 3 elective selector
-- Credit progress and repeat/pending advice
-- Dark mode and automatic local save
-- Mobile bottom navigation
-- Installable PWA (works like an app)
-- Offline support after the first successful load
-- GitHub Pages auto-deployment workflow
+- Level 1 LGPA and **Diploma** progress
+- Level 2 LGPA and **Higher Diploma** progress
+- Level 3 LGPA and **BIT Degree** progress
+- Semester SGPA, overall CGPA, earned credits, and Level 3 degree class
+- Grade or marks input modes
+- Level 3 elective selector (choose 4 / 12 credits)
+- ITE 2913 NGPA completion tracker
+- Repeat / incomplete / absent guidance
+- Automatic browser saving, dark mode, offline PWA, print / PDF report
+- Developer credit: **Naleer Khan — BSc (Hons) IT, UOM · Trainee Software Engineer**
 
-## Test locally
+## Official-rule disclaimer
 
-Opening `index.html` directly is enough for the calculator, but PWA/offline features require a local web server:
+This is an unofficial planning tool. The calculator checks the handbook credit and minimum LGPA conditions, but official awards also depend on Faculty requirements, registration conditions, time limits, and Board of Examiners decisions.
+
+## Run locally
+
+Open `index.html` in a browser. For full PWA testing, use a local server:
 
 ```bash
 python -m http.server 5500
@@ -25,10 +29,16 @@ python -m http.server 5500
 
 Then open `http://localhost:5500`.
 
-## Deploy
+## Deploy to GitHub Pages
 
-Read **DEPLOY-GITHUB-TANGLISH.md**. The included workflow deploys automatically whenever code is pushed to `main` or `master`.
+1. Put all project files in the repository root.
+2. Commit and push to `main`.
+3. Open **Repository → Settings → Pages**.
+4. Set **Source** to **GitHub Actions**.
+5. Open the **Actions** tab and run/re-run the deployment workflow.
 
-## Important
+The live URL will usually be:
 
-This is an unofficial planning tool. Always verify academic results and regulations using the latest official University of Moratuwa/CODL records.
+```text
+https://YOUR-USERNAME.github.io/bit-gpa-mate/
+```

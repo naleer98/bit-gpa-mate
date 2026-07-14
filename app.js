@@ -1,6 +1,7 @@
 "use strict";
 
-const STORAGE_KEY = "bit-gpa-mate-state-v1";
+const STORAGE_KEY = "bit-gpa-mate-state-v2";
+const LEGACY_STORAGE_KEY = "bit-gpa-mate-state-v1";
 
 const GRADE_SCALE = [
   { marks: "85 and above", grade: "A+", gp: 4.0, meaning: "Excellent", earnsCredit: true, countsInGpa: true },
@@ -75,7 +76,7 @@ const SEMESTERS = [
       course("ITE 2823", "Calculus & Statistical Distributions", 2, 2, 3),
       course("ITE 2163", "Software Engineering", 3, 2, 3),
       course("ITE 2153", "Object Oriented Analysis Design", 3, 2, 3),
-      course("ITE 2913", "Industry Mentoring Program", 3, 2, 3, { gpa: false, note: "NGPA compulsory" })
+      course("ITE 2913", "Industry Mentoring Program", 3, 2, 3, { gpa: false, note: "Compulsory NGPA module" })
     ]
   },
   {
@@ -131,15 +132,34 @@ const LEVEL3_ELECTIVES = [
   course("ITE 3753", "Cloud Computing", 3, 3, "5/6", { elective: true })
 ];
 
-const ALL_COURSES = [
-  ...SEMESTERS.flatMap((semester) => semester.courses),
-  ...LEVEL3_COMPULSORY,
-  ...LEVEL3_ELECTIVES
-];
+const LEVEL_INFO = {
+  1: {
+    title: "Level 1",
+    award: "Diploma",
+    officialAward: "Diploma Level",
+    creditText: "30 GPA credits",
+    description: "Complete Level 1 modules and maintain a minimum Level 1 LGPA of 2.00."
+  },
+  2: {
+    title: "Level 2",
+    award: "Higher Diploma",
+    officialAward: "Higher Diploma Level",
+    creditText: "30 GPA + 3 NGPA credits",
+    description: "Complete Level 2 GPA modules, ITE 2913, and maintain a minimum Level 2 LGPA of 2.00."
+  },
+  3: {
+    title: "Level 3",
+    award: "BIT Degree",
+    officialAward: "Degree Level",
+    creditText: "18 compulsory + 12 elective GPA credits",
+    description: "Complete 30 Level 3 GPA credits and maintain a minimum Level 3 LGPA of 2.00."
+  }
+};
 
 const DEFAULT_STATE = {
   inputMode: "grade",
   theme: "light",
+  activeLevel: 1,
   results: {},
   selectedElectives: [],
   ngpaStatus: {}
@@ -152,11 +172,15 @@ let deferredInstallPrompt = null;
 const elements = {
   navButtons: document.querySelectorAll(".nav-btn"),
   pages: document.querySelectorAll(".page"),
+  jumpButtons: document.querySelectorAll("[data-jump]"),
+  levelTabs: document.querySelectorAll(".level-tab"),
   themeToggle: document.getElementById("themeToggle"),
   inputMode: document.getElementById("inputMode"),
   resetBtn: document.getElementById("resetBtn"),
   printReportBtn: document.getElementById("printReportBtn"),
   semesterCards: document.getElementById("semesterCards"),
+  activeLevelSummary: document.getElementById("activeLevelSummary"),
+  qualificationJourney: document.getElementById("qualificationJourney"),
   summaryGrid: document.getElementById("summaryGrid"),
   levelOverview: document.getElementById("levelOverview"),
   classTitle: document.getElementById("classTitle"),
@@ -172,21 +196,33 @@ const elements = {
   installHelpDone: document.getElementById("installHelpDone")
 };
 
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 function loadState() {
   try {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!stored || typeof stored !== "object") return structuredClone(DEFAULT_STATE);
+    const current = localStorage.getItem(STORAGE_KEY);
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+    const stored = JSON.parse(current || legacy || "null");
+    if (!stored || typeof stored !== "object") return clone(DEFAULT_STATE);
+
+    const validElectiveIds = new Set(LEVEL3_ELECTIVES.map((item) => item.id));
+    const selectedElectives = Array.isArray(stored.selectedElectives)
+      ? stored.selectedElectives.filter((id) => validElectiveIds.has(id)).slice(0, 4)
+      : [];
 
     return {
-      ...structuredClone(DEFAULT_STATE),
+      ...clone(DEFAULT_STATE),
       ...stored,
+      activeLevel: [1, 2, 3].includes(Number(stored.activeLevel)) ? Number(stored.activeLevel) : 1,
       results: stored.results || {},
-      selectedElectives: Array.isArray(stored.selectedElectives) ? stored.selectedElectives.slice(0, 4) : [],
+      selectedElectives,
       ngpaStatus: stored.ngpaStatus || {}
     };
   } catch (error) {
     console.warn("Could not load saved calculator state.", error);
-    return structuredClone(DEFAULT_STATE);
+    return clone(DEFAULT_STATE);
   }
 }
 
@@ -202,9 +238,7 @@ function showToast(message) {
 }
 
 function switchPage(pageId) {
-  elements.navButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.page === pageId);
-  });
+  elements.navButtons.forEach((button) => button.classList.toggle("active", button.dataset.page === pageId));
   elements.pages.forEach((page) => page.classList.toggle("active-page", page.id === pageId));
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -234,17 +268,16 @@ function getResult(courseItem) {
 
 function getActiveLevel3Courses() {
   const selected = new Set(state.selectedElectives);
-  return [
-    ...LEVEL3_COMPULSORY,
-    ...LEVEL3_ELECTIVES.filter((item) => selected.has(item.id))
-  ];
+  return [...LEVEL3_COMPULSORY, ...LEVEL3_ELECTIVES.filter((item) => selected.has(item.id))];
 }
 
-function getActiveCourses() {
-  return [
-    ...SEMESTERS.flatMap((semester) => semester.courses),
-    ...getActiveLevel3Courses()
-  ];
+function getLevelCourses(level) {
+  if (level === 3) return getActiveLevel3Courses();
+  return SEMESTERS.filter((semester) => semester.level === level).flatMap((semester) => semester.courses);
+}
+
+function getAllActiveCourses() {
+  return [...getLevelCourses(1), ...getLevelCourses(2), ...getLevelCourses(3)];
 }
 
 function calculateCourses(courses) {
@@ -252,11 +285,14 @@ function calculateCourses(courses) {
   let earnedCredits = 0;
   let qualityPoints = 0;
   let gradedCourses = 0;
+  let enteredCourses = 0;
+  let failedCourses = 0;
 
   courses.filter((item) => item.gpa).forEach((item) => {
     const { grade } = getResult(item);
     if (!grade || !GRADE_MAP[grade]) return;
 
+    enteredCourses += 1;
     const gradeInfo = GRADE_MAP[grade];
     if (gradeInfo.countsInGpa) {
       attemptedCredits += item.credits;
@@ -264,6 +300,7 @@ function calculateCourses(courses) {
       gradedCourses += 1;
     }
     if (gradeInfo.earnsCredit) earnedCredits += item.credits;
+    if (["F", "I"].includes(grade)) failedCourses += 1;
   });
 
   return {
@@ -271,6 +308,8 @@ function calculateCourses(courses) {
     earnedCredits,
     qualityPoints,
     gradedCourses,
+    enteredCourses,
+    failedCourses,
     gpa: attemptedCredits > 0 ? qualityPoints / attemptedCredits : null
   };
 }
@@ -280,20 +319,17 @@ function calculateAll() {
   SEMESTERS.forEach((semester) => {
     semesterResults[semester.id] = calculateCourses(semester.courses);
   });
-  semesterResults.level3 = calculateCourses(getActiveLevel3Courses());
 
-  const level1Courses = SEMESTERS.filter((item) => item.level === 1).flatMap((item) => item.courses);
-  const level2Courses = SEMESTERS.filter((item) => item.level === 2).flatMap((item) => item.courses);
-  const level3Courses = getActiveLevel3Courses();
+  const levels = {
+    1: calculateCourses(getLevelCourses(1)),
+    2: calculateCourses(getLevelCourses(2)),
+    3: calculateCourses(getLevelCourses(3))
+  };
 
   return {
     semesters: semesterResults,
-    levels: {
-      1: calculateCourses(level1Courses),
-      2: calculateCourses(level2Courses),
-      3: calculateCourses(level3Courses)
-    },
-    overall: calculateCourses([...level1Courses, ...level2Courses, ...level3Courses])
+    levels,
+    overall: calculateCourses(getAllActiveCourses())
   };
 }
 
@@ -302,12 +338,33 @@ function formatGpa(value) {
 }
 
 function degreeClass(level3Gpa) {
-  if (level3Gpa === null) return { title: "Not enough Level 3 grades", detail: "Complete Level 3 GPA modules to see your provisional class." };
+  if (level3Gpa === null) return { title: "Not enough Level 3 grades", detail: "Enter Level 3 results to see the provisional degree class." };
   if (level3Gpa >= 3.7) return { title: "First Class", detail: "Level 3 LGPA is 3.70 or above." };
   if (level3Gpa >= 3.3) return { title: "Second Class – Upper Division", detail: "Level 3 LGPA is between 3.30 and 3.69." };
   if (level3Gpa >= 3.0) return { title: "Second Class – Lower Division", detail: "Level 3 LGPA is between 3.00 and 3.29." };
   if (level3Gpa >= 2.0) return { title: "Pass", detail: "Level 3 LGPA is between 2.00 and 2.99." };
   return { title: "Below pass classification", detail: "The current Level 3 LGPA is below 2.00." };
+}
+
+function getQualificationStatus(level, calculations) {
+  const result = calculations.levels[level];
+  const creditsReady = result.earnedCredits >= 30;
+  const lgpaReady = result.gpa !== null && result.gpa >= 2.0;
+  const ngpaReady = level !== 2 || state.ngpaStatus.ITE2913 === "completed";
+  const electivesReady = level !== 3 || state.selectedElectives.length === 4;
+  const complete = creditsReady && lgpaReady && ngpaReady && electivesReady;
+  const started = result.enteredCourses > 0 || (level === 2 && Boolean(state.ngpaStatus.ITE2913)) || (level === 3 && state.selectedElectives.length > 0);
+
+  return {
+    complete,
+    started,
+    creditsReady,
+    lgpaReady,
+    ngpaReady,
+    electivesReady,
+    label: complete ? "Requirements met*" : started ? "In progress" : "Not started",
+    className: complete ? "complete" : started ? "progress" : ""
+  };
 }
 
 function courseOutcome(grade) {
@@ -364,10 +421,12 @@ function renderGradeInput(courseItem) {
 function renderCourseRows(courses) {
   return courses.map((courseItem) => {
     const grade = courseItem.gpa ? getResult(courseItem).grade : "";
-    const outcome = courseItem.gpa ? courseOutcome(grade) : {
-      text: state.ngpaStatus[courseItem.id] === "completed" ? "Completed" : state.ngpaStatus[courseItem.id] === "not-completed" ? "Not completed" : "Pending",
-      className: state.ngpaStatus[courseItem.id] === "not-completed" ? "fail" : "pending"
-    };
+    const outcome = courseItem.gpa
+      ? courseOutcome(grade)
+      : {
+          text: state.ngpaStatus[courseItem.id] === "completed" ? "Completed" : state.ngpaStatus[courseItem.id] === "not-completed" ? "Not completed" : "Pending",
+          className: state.ngpaStatus[courseItem.id] === "not-completed" ? "fail" : "pending"
+        };
 
     return `
       <tr>
@@ -377,7 +436,7 @@ function renderCourseRows(courses) {
           ${courseItem.note ? `<span class="course-meta">${courseItem.note}</span>` : ""}
         </td>
         <td>${courseItem.credits}</td>
-        <td>${courseItem.gpa ? renderGradeInput(courseItem) : renderGradeInput(courseItem)}</td>
+        <td>${renderGradeInput(courseItem)}</td>
         <td><span class="grade-result ${outcome.className}">${outcome.text}</span></td>
       </tr>
     `;
@@ -389,7 +448,7 @@ function renderElectivePicker() {
   return `
     <div class="elective-picker">
       <h4>Select 4 Level 3 electives <span class="elective-count">${selectedCount}/4 selected</span></h4>
-      <p>Each elective carries 3 credits. You need 12 elective credits in Level 3.</p>
+      <p>Each elective carries 3 credits. Four electives provide the required 12 elective credits.</p>
       <div class="elective-grid">
         ${LEVEL3_ELECTIVES.map((item) => {
           const checked = state.selectedElectives.includes(item.id);
@@ -425,40 +484,102 @@ function semesterCardTemplate(semester, calculation) {
   `;
 }
 
+function renderActiveLevelSummary(calculations) {
+  const level = state.activeLevel;
+  const info = LEVEL_INFO[level];
+  const result = calculations.levels[level];
+  const status = getQualificationStatus(level, calculations);
+
+  elements.activeLevelSummary.innerHTML = `
+    <div>
+      <p class="section-kicker">${info.title} · ${info.officialAward}</p>
+      <h3>${info.award} progress</h3>
+      <p class="muted">${info.description}</p>
+    </div>
+    <div class="level-summary-stat"><span>LGPA</span><strong>${formatGpa(result.gpa)}</strong></div>
+    <div class="level-summary-stat"><span>Earned credits</span><strong>${result.earnedCredits}/30</strong></div>
+    <div class="level-summary-stat"><span>Status</span><strong>${status.label}</strong></div>
+  `;
+}
+
 function renderSemesterCards() {
   const calculations = calculateAll();
-  const standardCards = SEMESTERS.map((semester) => semesterCardTemplate(semester, calculations.semesters[semester.id])).join("");
-  const level3Courses = getActiveLevel3Courses();
+  renderActiveLevelSummary(calculations);
 
-  const level3Card = `
-    <article class="semester-card">
-      <div class="semester-header">
-        <div>
-          <h3>Semesters 5 & 6</h3>
-          <p>Level 3 · 18 compulsory + 12 elective GPA credits</p>
+  if (state.activeLevel === 3) {
+    const level3Courses = getActiveLevel3Courses();
+    elements.semesterCards.innerHTML = `
+      <article class="semester-card">
+        <div class="semester-header">
+          <div>
+            <h3>Semesters 5 & 6</h3>
+            <p>Level 3 · 18 compulsory + 12 elective GPA credits</p>
+          </div>
+          <div class="sgpa-badge"><span>Level 3 LGPA</span><strong>${formatGpa(calculations.levels[3].gpa)}</strong></div>
         </div>
-        <div class="sgpa-badge"><span>Level 3 LGPA</span><strong>${formatGpa(calculations.levels[3].gpa)}</strong></div>
-      </div>
-      ${renderElectivePicker()}
-      <div class="table-wrap">
-        <table class="course-table">
-          <thead><tr><th>Code</th><th>Course module</th><th>Credits</th><th>${state.inputMode === "marks" ? "Marks / Grade" : "Grade"}</th><th>Status</th></tr></thead>
-          <tbody>${renderCourseRows(level3Courses)}</tbody>
-        </table>
-      </div>
-    </article>
-  `;
+        ${renderElectivePicker()}
+        <div class="table-wrap">
+          <table class="course-table">
+            <thead><tr><th>Code</th><th>Course module</th><th>Credits</th><th>${state.inputMode === "marks" ? "Marks / Grade" : "Grade"}</th><th>Status</th></tr></thead>
+            <tbody>${renderCourseRows(level3Courses)}</tbody>
+          </table>
+        </div>
+      </article>
+    `;
+    return;
+  }
 
-  elements.semesterCards.innerHTML = standardCards + level3Card;
+  const levelSemesters = SEMESTERS.filter((semester) => semester.level === state.activeLevel);
+  elements.semesterCards.innerHTML = levelSemesters
+    .map((semester) => semesterCardTemplate(semester, calculations.semesters[semester.id]))
+    .join("");
+}
+
+function renderQualificationJourney(calculations) {
+  elements.qualificationJourney.innerHTML = [1, 2, 3].map((level) => {
+    const info = LEVEL_INFO[level];
+    const result = calculations.levels[level];
+    const status = getQualificationStatus(level, calculations);
+    const progress = Math.min(100, (result.earnedCredits / 30) * 100);
+    const requirements = [
+      { ok: status.creditsReady, text: `30 earned GPA credits (${result.earnedCredits}/30)` },
+      { ok: status.lgpaReady, text: `Minimum LGPA 2.00 (${formatGpa(result.gpa)})` }
+    ];
+
+    if (level === 2) requirements.push({ ok: status.ngpaReady, text: "ITE 2913 compulsory NGPA completed" });
+    if (level === 3) requirements.push({ ok: status.electivesReady, text: `Four electives selected (${state.selectedElectives.length}/4)` });
+
+    return `
+      <article class="qualification-card ${status.complete ? "complete" : status.started ? "warning" : ""}">
+        <div class="qualification-card-head">
+          <span class="level-badge">L${level}</span>
+          <span class="status-chip ${status.className}">${status.label}</span>
+        </div>
+        <h3>${info.award}</h3>
+        <p class="award-subtitle">${info.officialAward} · ${info.creditText}</p>
+        <div class="qualification-metrics">
+          <div class="metric-box"><span>LGPA</span><strong>${formatGpa(result.gpa)}</strong></div>
+          <div class="metric-box"><span>Credits</span><strong>${result.earnedCredits}/30</strong></div>
+        </div>
+        <div class="progress-track" aria-label="${info.title} credit progress">
+          <div class="progress-fill" style="width:${progress}%"></div>
+        </div>
+        <div class="requirement-list">
+          ${requirements.map((item) => `<div class="requirement-item ${item.ok ? "ok" : ""}"><span>${item.ok ? "✓" : "○"}</span><span>${item.text}</span></div>`).join("")}
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
 function renderSummary() {
   const calculations = calculateAll();
   const ngpaCompleted = state.ngpaStatus.ITE2913 === "completed";
+  const completeLevels = [1, 2, 3].filter((level) => getQualificationStatus(level, calculations).complete).length;
   const summaryItems = [
-    { label: "Current CGPA", value: formatGpa(calculations.overall.gpa), hint: "All GPA-bearing modules entered" },
+    { label: "Current CGPA", value: formatGpa(calculations.overall.gpa), hint: "All entered GPA-bearing modules" },
     { label: "Earned GPA credits", value: `${calculations.overall.earnedCredits}/90`, hint: "D or above; X treated as fulfilled" },
-    { label: "Attempted GPA credits", value: `${calculations.overall.attemptedCredits}/90`, hint: "T and X are excluded from GPA" },
+    { label: "Levels ready", value: `${completeLevels}/3`, hint: "Level requirements currently met" },
     { label: "NGPA requirement", value: ngpaCompleted ? "Done" : "Pending", hint: "ITE 2913 · 3 NGPA credits" }
   ];
 
@@ -479,24 +600,27 @@ function renderSummary() {
         <div class="progress-track" aria-label="Level ${level} credit progress">
           <div class="progress-fill" style="width:${percentage}%"></div>
         </div>
-        <span class="level-stat">${formatGpa(result.gpa)} · ${result.earnedCredits}/30</span>
+        <span class="level-stat">LGPA ${formatGpa(result.gpa)} · ${result.earnedCredits}/30</span>
       </div>
     `;
   }).join("");
 
-  const classResult = degreeClass(calculations.levels[3].gpa);
-  const isProvisional = calculations.levels[3].attemptedCredits < 30;
-  elements.classTitle.textContent = `${isProvisional && calculations.levels[3].gpa !== null ? "Provisional · " : ""}${classResult.title}`;
-  elements.classMessage.textContent = isProvisional && calculations.levels[3].gpa !== null
-    ? `${classResult.detail} This is provisional because fewer than 30 Level 3 GPA credits have been entered.`
-    : classResult.detail;
+  renderQualificationJourney(calculations);
 
-  renderRepeatAdvice();
+  const classResult = degreeClass(calculations.levels[3].gpa);
+  const level3Complete = getQualificationStatus(3, calculations).complete;
+  const isProvisional = !level3Complete && calculations.levels[3].gpa !== null;
+  elements.classTitle.textContent = `${isProvisional ? "Provisional · " : ""}${classResult.title}`;
+  elements.classMessage.textContent = calculations.levels[3].gpa === null
+    ? classResult.detail
+    : `${classResult.detail} ${level3Complete ? "Official classification also depends on the handbook time limits and other Faculty conditions." : "Complete all Level 3 requirements for a final academic check."}`;
+
+  renderRepeatAdvice(calculations);
 }
 
-function renderRepeatAdvice() {
+function renderRepeatAdvice(calculations) {
   const advice = [];
-  const activeCourses = getActiveCourses().filter((item) => item.gpa);
+  const activeCourses = getAllActiveCourses().filter((item) => item.gpa);
 
   activeCourses.forEach((item) => {
     const grade = getResult(item).grade;
@@ -507,19 +631,27 @@ function renderRepeatAdvice() {
     } else if (grade === "I") {
       advice.push({ type: "warning", title: `${item.code} · ${item.name}`, text: "I grade: repeat the semester examination only. The improved grade is capped at C." });
     } else if (grade === "T") {
-      advice.push({ type: "info", title: `${item.code} · ${item.name}`, text: "T grade: you completed CA but were absent for the final exam. The next exam attempt is treated as a first attempt." });
+      advice.push({ type: "info", title: `${item.code} · ${item.name}`, text: "T grade: CA was completed but the final exam was missed. The next exam sitting is treated as a first attempt." });
     } else if (grade === "D" || grade === "C-") {
-      advice.push({ type: "info", title: `${item.code} · ${item.name}`, text: `${grade} earns credit. The handbook allows an end-of-semester exam repeat to improve the grade up to C.` });
+      advice.push({ type: "info", title: `${item.code} · ${item.name}`, text: `${grade} earns credit. The semester examination may be repeated to improve the result up to C.` });
     }
   });
 
   if (state.selectedElectives.length < 4) {
-    advice.push({ type: "warning", title: "Level 3 electives", text: `Select ${4 - state.selectedElectives.length} more elective${4 - state.selectedElectives.length === 1 ? "" : "s"} to reach the required 12 elective credits.` });
+    const remaining = 4 - state.selectedElectives.length;
+    advice.push({ type: "warning", title: "Level 3 electives", text: `Select ${remaining} more elective${remaining === 1 ? "" : "s"} to reach the required 12 elective credits.` });
   }
 
   if (state.ngpaStatus.ITE2913 !== "completed") {
-    advice.push({ type: "info", title: "ITE 2913 · Industry Mentoring Program", text: "This 3-credit compulsory NGPA module must be completed, but it does not affect GPA." });
+    advice.push({ type: "info", title: "ITE 2913 · Industry Mentoring Program", text: "This compulsory 3-credit NGPA module must be completed for Level 2 requirements, but it does not affect GPA." });
   }
+
+  [1, 2, 3].forEach((level) => {
+    const status = getQualificationStatus(level, calculations);
+    if (status.complete) {
+      advice.push({ type: "success", title: `${LEVEL_INFO[level].award} academic check`, text: "The entered results currently satisfy the calculator's credit and minimum LGPA checks. Confirm all other requirements with official University records." });
+    }
+  });
 
   elements.repeatAdvice.innerHTML = advice.length
     ? advice.map((item) => `<div class="advice-item ${item.type}"><strong>${item.title}</strong><span>${item.text}</span></div>`).join("")
@@ -545,34 +677,41 @@ function renderCurriculum() {
     </div>
   `;
 
-  const semesterSections = SEMESTERS.map((semester) => `
-    <article class="panel curriculum-level">
-      <div class="curriculum-heading">
-        <div><p class="section-kicker">Level ${semester.level}</p><h3>${semester.title}</h3></div>
-        <span class="credit-pill">${semester.subtitle.split("·").pop().trim()}</span>
+  const level1And2 = [1, 2].map((level) => {
+    const info = LEVEL_INFO[level];
+    const semesterSections = SEMESTERS.filter((semester) => semester.level === level).map((semester) => `
+      <div class="curriculum-level">
+        <div class="curriculum-heading">
+          <div><p class="section-kicker">${info.award}</p><h3>${semester.title}</h3></div>
+          <span class="credit-pill">${semester.subtitle.split("·").pop().trim()}</span>
+        </div>
+        ${renderCurriculumTable(semester.courses)}
       </div>
-      ${renderCurriculumTable(semester.courses)}
-    </article>
-  `).join("");
+    `).join("");
 
-  const level3Section = `
-    <article class="panel curriculum-level">
-      <div class="curriculum-heading">
-        <div><p class="section-kicker">Level 3</p><h3>Compulsory modules</h3></div>
-        <span class="credit-pill">18 GPA credits</span>
+    return `<article class="panel">${semesterSections}</article>`;
+  }).join("");
+
+  const level3 = `
+    <article class="panel">
+      <div class="curriculum-level">
+        <div class="curriculum-heading">
+          <div><p class="section-kicker">BIT Degree</p><h3>Level 3 compulsory modules</h3></div>
+          <span class="credit-pill">18 GPA credits</span>
+        </div>
+        ${renderCurriculumTable(LEVEL3_COMPULSORY)}
       </div>
-      ${renderCurriculumTable(LEVEL3_COMPULSORY)}
-    </article>
-    <article class="panel curriculum-level">
-      <div class="curriculum-heading">
-        <div><p class="section-kicker">Level 3</p><h3>Elective pool</h3></div>
-        <span class="credit-pill">Choose 4 · 12 credits</span>
+      <div class="curriculum-level">
+        <div class="curriculum-heading">
+          <div><p class="section-kicker">BIT Degree</p><h3>Level 3 elective pool</h3></div>
+          <span class="credit-pill">Choose 4 · 12 credits</span>
+        </div>
+        ${renderCurriculumTable(LEVEL3_ELECTIVES)}
       </div>
-      ${renderCurriculumTable(LEVEL3_ELECTIVES)}
     </article>
   `;
 
-  elements.curriculumContent.innerHTML = semesterSections + level3Section;
+  elements.curriculumContent.innerHTML = level1And2 + level3;
 }
 
 function renderGradeGuide() {
@@ -590,6 +729,7 @@ function renderAll() {
   document.documentElement.dataset.theme = state.theme;
   elements.themeToggle.textContent = state.theme === "dark" ? "☀️" : "🌙";
   elements.inputMode.value = state.inputMode;
+  elements.levelTabs.forEach((button) => button.classList.toggle("active", Number(button.dataset.level) === state.activeLevel));
   renderSemesterCards();
   renderSummary();
 }
@@ -606,7 +746,7 @@ function handleElectiveChange(checkbox) {
   if (checkbox.checked) {
     if (state.selectedElectives.length >= 4) {
       checkbox.checked = false;
-      showToast("You can select only 4 Level 3 electives (12 credits)." );
+      showToast("You can select only 4 Level 3 electives (12 credits).");
       return;
     }
     state.selectedElectives.push(id);
@@ -619,10 +759,16 @@ function handleElectiveChange(checkbox) {
 
 function attachEvents() {
   elements.navButtons.forEach((button) => button.addEventListener("click", () => switchPage(button.dataset.page)));
+  elements.jumpButtons.forEach((button) => button.addEventListener("click", (event) => {
+    if (button.tagName === "A") event.preventDefault();
+    switchPage(button.dataset.jump);
+  }));
 
-  document.querySelectorAll("[data-jump]").forEach((button) => {
-    button.addEventListener("click", () => switchPage(button.dataset.jump));
-  });
+  elements.levelTabs.forEach((button) => button.addEventListener("click", () => {
+    state.activeLevel = Number(button.dataset.level);
+    saveState();
+    renderAll();
+  }));
 
   elements.themeToggle.addEventListener("click", () => {
     state.theme = state.theme === "dark" ? "light" : "dark";
@@ -641,7 +787,7 @@ function attachEvents() {
     const confirmed = window.confirm("Delete all entered marks, grades, elective choices, and saved progress?");
     if (!confirmed) return;
     const theme = state.theme;
-    state = { ...structuredClone(DEFAULT_STATE), theme };
+    state = { ...clone(DEFAULT_STATE), theme };
     saveState();
     renderAll();
     showToast("Calculator data has been reset.");
@@ -669,9 +815,7 @@ function attachEvents() {
       handleElectiveChange(target);
     }
   });
-
 }
-
 
 function isRunningStandalone() {
   return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
@@ -686,13 +830,13 @@ function openInstallHelp() {
 
   if (isIOSDevice()) {
     elements.installHelpText.innerHTML = `
-      <p><strong>Safari</strong> browser use செய்யுங்கள்.</p>
-      <p>Bottom share icon <strong>↥</strong> tap செய்து, <strong>Add to Home Screen</strong> select செய்யுங்கள்.</p>
+      <p>Open this website in <strong>Safari</strong>.</p>
+      <p>Tap the Share icon <strong>↥</strong>, then choose <strong>Add to Home Screen</strong>.</p>
     `;
   } else {
     elements.installHelpText.innerHTML = `
-      <p>Browser menu open செய்து <strong>Install app</strong> அல்லது <strong>Add to Home screen</strong> select செய்யுங்கள்.</p>
-      <p>Install option வரவில்லை என்றால் page-ஐ refresh செய்து மீண்டும் try செய்யுங்கள்.</p>
+      <p>Open the browser menu and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</p>
+      <p>If the option is missing, refresh the page and try again.</p>
     `;
   }
 
@@ -733,10 +877,10 @@ function setupInstallExperience() {
     deferredInstallPrompt = null;
 
     if (choice.outcome === "accepted") {
-      showToast("BIT GPA Mate install started 🎉");
+      showToast("BIT GPA Mate installation started 🎉");
       elements.installAppBtn.classList.add("hidden");
     } else {
-      showToast("Install cancelled. You can install later.");
+      showToast("Installation cancelled. You can install it later.");
     }
   });
 
@@ -754,7 +898,7 @@ function setupInstallExperience() {
 }
 
 function registerServiceWorker() {
-  if ("serviceWorker" in navigator) {
+  if ("serviceWorker" in navigator && navigator.serviceWorker) {
     navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).catch((error) => {
       console.warn("Service worker registration failed.", error);
     });
