@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#7d1628" />
+  <meta name="description" content="Unofficial student-friendly GPA calculator for University of Moratuwa BIT students." />
+  <title>BIT GPA Mate | University of Moratuwa</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <img class="brand-crest" src="assets/uom-crest.png" alt="University of Moratuwa crest" />
+        <div>
+          <p class="eyebrow">University of Moratuwa · BIT</p>
+          <h1>BIT GPA Mate</h1>
+          <p class="subtitle">Student-friendly GPA, LGPA, CGPA & degree class calculator</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <span class="unofficial-badge">Unofficial student tool</span>
+        <button id="installAppBtn" class="install-app-btn hidden" type="button">⬇ Install App</button>
+        <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+      </div>
+    </header>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+      <button class="nav-btn" data-page="calculator"><span class="nav-icon">🧮</span><span>Calculator</span></button>
+      <button class="nav-btn" data-page="curriculum"><span class="nav-icon">📚</span><span>Curriculum</span></button>
+      <button class="nav-btn" data-page="grade-guide"><span class="nav-icon">🎓</span><span>Grades</span></button>
+      <button class="nav-btn" data-page="about"><span class="nav-icon">ⓘ</span><span>About</span></button>
+    </nav>
+
+    <main>
+      <section id="dashboard" class="page active-page">
+        <div class="hero-card">
+          <div class="hero-content">
+            <p class="section-kicker">Your BIT academic snapshot</p>
+            <h2>One place to track every semester — without spreadsheet drama 😄</h2>
+            <p>
+              Enter marks or grades, select your Level 3 electives, and instantly see SGPA, LGPA,
+              CGPA, completed credits, repeat advice, and your provisional degree class.
+            </p>
+            <div class="hero-actions">
+              <button class="primary-btn" type="button" data-jump="calculator">Start calculating</button>
+              <button id="printReportBtn" class="secondary-btn" type="button">Print / Save PDF</button>
+            </div>
+          </div>
+          <img class="hero-logo" src="assets/bit-uom-logo.png" alt="BIT University of Moratuwa logo" />
+        </div>
+
+        <div class="summary-grid" id="summaryGrid"></div>
+
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <p class="section-kicker">Level performance</p>
+                <h3>LGPA overview</h3>
+              </div>
+            </div>
+            <div id="levelOverview" class="level-overview"></div>
+          </article>
+
+          <article class="panel class-panel">
+            <p class="section-kicker">Degree classification</p>
+            <h3 id="classTitle">Not enough Level 3 grades</h3>
+            <p id="classMessage">Complete Level 3 GPA modules to see your provisional class.</p>
+            <div class="class-scale">
+              <div><span>3.70+</span><strong>First Class</strong></div>
+              <div><span>3.30–3.69</span><strong>Second Upper</strong></div>
+              <div><span>3.00–3.29</span><strong>Second Lower</strong></div>
+              <div><span>2.00–2.99</span><strong>Pass</strong></div>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Smart academic helper</p>
+              <h3>Repeat & pending module advice</h3>
+            </div>
+          </div>
+          <div id="repeatAdvice" class="advice-list"></div>
+        </article>
+
+        <article class="panel quick-guide">
+          <div>
+            <p class="section-kicker">Quick start</p>
+            <h3>Use it in 3 simple steps</h3>
+          </div>
+          <div class="steps-grid">
+            <div class="step-card"><span>1</span><h4>Choose input mode</h4><p>Enter marks or directly select grades.</p></div>
+            <div class="step-card"><span>2</span><h4>Fill semester results</h4><p>Your SGPA and LGPA update instantly.</p></div>
+            <div class="step-card"><span>3</span><h4>Check class & credits</h4><p>See CGPA, Level 3 class, and graduation progress.</p></div>
+          </div>
+        </article>
+      </section>
+
+      <section id="calculator" class="page">
+        <div class="page-title-row">
+          <div>
+            <p class="section-kicker">Academic calculator</p>
+            <h2>Enter your BIT results</h2>
+            <p class="muted">Changes are saved automatically on this device.</p>
+          </div>
+          <div class="toolbar">
+            <label class="field-label" for="inputMode">Input mode</label>
+            <select id="inputMode" class="control-select">
+              <option value="grade">Grade</option>
+              <option value="marks">Marks</option>
+            </select>
+            <button id="resetBtn" class="danger-outline-btn" type="button">Reset all</button>
+          </div>
+        </div>
+
+        <div class="notice-card">
+          <strong>Marks mode note:</strong> 0–34 is shown as <strong>I</strong> assuming CA eligibility was satisfied.
+          Select <strong>Grade mode</strong> and choose <strong>F</strong> when CA was failed/not completed.
+        </div>
+
+        <div id="semesterCards" class="semester-stack"></div>
+      </section>
+
+      <section id="curriculum" class="page">
+        <div class="page-title-row">
+          <div>
+            <p class="section-kicker">2024 curriculum</p>
+            <h2>BIT course structure</h2>
+            <p class="muted">90 GPA credits + 3 NGPA credits.</p>
+          </div>
+        </div>
+        <div id="curriculumContent"></div>
+      </section>
+
+      <section id="grade-guide" class="page">
+        <div class="page-title-row">
+          <div>
+            <p class="section-kicker">Official handbook rules entered into the calculator</p>
+            <h2>Grade points & repeat rules</h2>
+          </div>
+        </div>
+
+        <div class="guide-grid">
+          <article class="panel">
+            <h3>Grade scale</h3>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Marks</th><th>Grade</th><th>Grade point</th><th>Meaning</th></tr></thead>
+                <tbody id="gradeTableBody"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel rules-card">
+            <h3>Important rules</h3>
+            <ul class="rule-list">
+              <li><strong>D or above</strong> earns credit for a course module.</li>
+              <li><strong>CA minimum:</strong> 35% is required to sit the semester examination.</li>
+              <li><strong>Semester exam minimum:</strong> 35% is required for D or above.</li>
+              <li><strong>F:</strong> repeat CA + semester exam; repeat grade is capped at C.</li>
+              <li><strong>I:</strong> repeat semester exam only; improvement is capped at C.</li>
+              <li><strong>T:</strong> absent after completing CA; next semester exam is treated as a first attempt.</li>
+              <li><strong>Degree class:</strong> determined using Level 3 LGPA, not overall CGPA.</li>
+            </ul>
+          </article>
+        </div>
+
+        <article class="panel formula-panel">
+          <h3>GPA formula</h3>
+          <p class="formula">GPA = Σ (Course credits × Grade point) ÷ Σ Course credits</p>
+          <p class="muted">T and X have no grade point and are excluded until a GPA-bearing result is available.</p>
+        </article>
+      </section>
+
+      <section id="about" class="page">
+        <div class="about-layout">
+          <article class="panel about-card">
+            <img src="assets/uom-crest.png" alt="University of Moratuwa crest" />
+            <div>
+              <p class="section-kicker">About this project</p>
+              <h2>Made for BIT students</h2>
+              <p>
+                BIT GPA Mate is an offline-first, student-friendly calculator based on the supplied
+                University of Moratuwa CODL BIT 2024 curriculum handbook screenshots.
+              </p>
+              <p>
+                It is designed for planning and self-checking only. Final academic decisions always come
+                from official university records and the Board of Examiners.
+              </p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h3>Privacy</h3>
+            <p>Your grades stay inside your browser using local storage. Nothing is uploaded anywhere.</p>
+            <h3>Works offline</h3>
+            <p>After the first load, the site can work without internet in supported browsers.</p>
+            <h3>Install as an app</h3>
+            <p>Use your browser menu and choose “Install app” or “Add to Home screen”.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>BIT GPA Mate · Unofficial student tool · University rules may change, so verify with the latest official handbook.</p>
+    </footer>
+  </div>
+
+
+  <dialog id="installHelpDialog" class="install-dialog">
+    <div class="install-dialog-content">
+      <button id="closeInstallHelp" class="dialog-close" type="button" aria-label="Close">×</button>
+      <div class="install-dialog-icon">📲</div>
+      <h2>Install BIT GPA Mate</h2>
+      <div id="installHelpText">
+        <p>Chrome / Edge browser menu open செய்து <strong>Install app</strong> அல்லது <strong>Add to Home screen</strong> select செய்யுங்கள்.</p>
+      </div>
+      <button id="installHelpDone" class="primary-btn" type="button">Okay</button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

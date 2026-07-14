@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#7d1628">
+  <title>Page not found | BIT GPA Mate</title>
+  <style>
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:#f5f3f0;color:#241f20;font-family:system-ui,sans-serif;text-align:center}
+    main{max-width:560px;background:#fff;padding:42px;border-radius:26px;box-shadow:0 18px 50px rgba(69,35,43,.12)}
+    h1{font-size:4rem;margin:0;color:#7d1628}p{line-height:1.6;color:#72696b}a{display:inline-block;margin-top:12px;padding:12px 18px;border-radius:12px;background:#7d1628;color:#fff;text-decoration:none;font-weight:800}
+  </style>
+</head>
+<body><main><h1>404</h1><h2>Page not found</h2><p>இந்த page கிடைக்கவில்லை. GPA calculator home page-க்கு திரும்பலாம்.</p><a id="homeLink" href="./">Open BIT GPA Mate</a></main>
+<script>
+  const parts = location.pathname.split('/').filter(Boolean);
+  const base = location.hostname.endsWith('github.io') && parts.length ? `/${parts[0]}/` : '/';
+  document.getElementById('homeLink').href = base;
+</script></body></html>
