@@ -2,6 +2,15 @@ plugins {
     id 'com.android.application'
 }
 
+def signingEnv = [
+    keystorePath: System.getenv('ANDROID_KEYSTORE_PATH'),
+    storePassword: System.getenv('ANDROID_KEYSTORE_PASSWORD'),
+    keyAlias: System.getenv('ANDROID_KEY_ALIAS'),
+    keyPassword: System.getenv('ANDROID_KEY_PASSWORD')
+]
+
+def releaseSigningConfigured = signingEnv.values().every { value -> value != null && !value.trim().isEmpty() }
+
 android {
     namespace 'com.naleerkhan.bitgpamate'
     compileSdk 36
@@ -14,8 +23,22 @@ android {
         versionName '1.0.0'
     }
 
+    signingConfigs {
+        release {
+            if (releaseSigningConfigured) {
+                storeFile file(signingEnv.keystorePath)
+                storePassword signingEnv.storePassword
+                keyAlias signingEnv.keyAlias
+                keyPassword signingEnv.keyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (releaseSigningConfigured) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -24,6 +47,18 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// A release build intended for distribution must always be signed.
+gradle.taskGraph.whenReady { taskGraph ->
+    def releaseRequested = taskGraph.allTasks.any { task ->
+        task.name.toLowerCase().contains('release') &&
+            (task.name.toLowerCase().contains('assemble') || task.name.toLowerCase().contains('bundle'))
+    }
+
+    if (releaseRequested && !releaseSigningConfigured) {
+        throw new GradleException('Release signing is not configured. Set ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, and ANDROID_KEY_PASSWORD.')
     }
 }
 
